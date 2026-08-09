@@ -1,31 +1,63 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>Amar To-Do List</title>
-  <style>
-    body { font-family: Arial; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
-    h1 { color: #00ff88; }
-    input, button { padding: 10px; margin: 5px; border-radius: 8px; border: none; }
-    button { background: #00ff88; color: black; font-weight: bold; cursor: pointer; }
-    li { list-style: none; margin: 10px auto; background: #333; padding: 10px; border-radius: 8px; width: 80%; }
-  </style>
+<meta charset="UTF-8">
+<title>Amar To-Do List</title>
+<style>
+    body { font-family: 'Segoe UI'; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 20px; min-height: 100vh; }
+  .container { max-width: 500px; margin: auto; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; }
+    input, button { padding: 12px; margin: 5px; border-radius: 10px; border: none; font-size: 16px; }
+    button { background: #ff6b6b; color: white; font-weight: bold; cursor: pointer; }
+    li { background: rgba(255,255,255,0.1); padding: 12px; margin: 10px 0; border-radius: 10px; display: flex; justify-content: space-between; }
+    li.done span { text-decoration: line-through; opacity: 0.6; }
+  .del { background: #ff5252; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
+</style>
 </head>
 <body>
-  <h1>🔥 BOS ER TO-DO LIST 🔥</h1>
-  <input type="text" id="task" placeholder="Ki kaj ache?">
-  <button onclick="addTask()">Add</button>
-  <ul id="list"></ul>
+<div class="container">
+    <h1>🔥 BOS ER TO-DO LIST 🔥</h1>
+    <input type="text" id="task" placeholder="Ki kaj ache?">
+    <button onclick="addTask()">Add</button>
+    <ul id="list"></ul>
+</div>
 
-  <script>
-    function addTask() {
-      let task = document.getElementById("task").value;
-      if(task == "") return;
-      let li = document.createElement("li");
-      li.innerHTML = task + " <button onclick='this.parentNode.remove()'>Done ✅</button>";
-      document.getElementById("list").appendChild(li);
-      document.getElementById("task").value = "";
-    }
-  </script>
+<script>
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function save() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    render();
+}
+
+function addTask() {
+    let val = document.getElementById('task').value;
+    if(val === '') return;
+    tasks.push({text: val, done: false});
+    document.getElementById('task').value = '';
+    save();
+}
+
+function toggleTask(i) {
+    tasks[i].done =!tasks[i].done;
+    save();
+}
+
+function delTask(i) {
+    tasks.splice(i, 1);
+    save();
+}
+
+function render() {
+    let list = document.getElementById('list');
+    list.innerHTML = '';
+    tasks.forEach((t, i) => {
+        list.innerHTML += `<li class="${t.done?'done':''}">
+            <span onclick="toggleTask(${i})">${t.text}</span>
+            <span class="del" onclick="delTask(${i})">X</span>
+        </li>`;
+    });
+}
+render(); // page load holei ager task gulo dekhabe
+</script>
 </body>
 </html>
